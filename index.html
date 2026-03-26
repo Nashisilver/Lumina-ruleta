@@ -698,13 +698,18 @@
     const chipsEl = document.getElementById('chipsDisplay');
 
     if (user) {
-      chipsEl.textContent = 'Cargando...';
-      // En producción aquí harías fetch al servidor para obtener fichas reales
-      chipsEl.textContent = '$—';
-      chipsEl.dataset.chips = 0;
-    } else {
-      chipsEl.textContent = 'Demo';
-      chipsEl.dataset.chips = 10_000_000;
+    chipsEl.textContent = 'Cargando...';
+    // fetch fichas reales
+    fetch(`https://lit-surgery-mice-behaviour.trycloudflare.com/fichas?user_id=${user.id}`)
+        .then(r => r.json())
+        .then(data => {
+            chipsEl.textContent = data.existe ? `$${data.fichas.toLocaleString()}` : '$0';
+            chipsEl.dataset.chips = data.existe ? data.fichas : 0;
+        })
+        .catch(() => {
+            chipsEl.textContent = '$—';
+            chipsEl.dataset.chips = 0;
+        });
     }
 
     // Verificar cooldown al cargar
